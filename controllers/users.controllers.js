@@ -7,7 +7,10 @@ const usersGet = async (req = request, res = response) => {
   const { limite = 5, desde = 0 } = req.query;
   const query = { status: true };
 
-  const [total, users] = await Promise.all([User.countDocuments(query), User.find(query).skip(Number(desde)).limit(Number(limite))]);
+  const [total, users] = await Promise.all([
+    User.countDocuments(query),
+    User.find(query).skip(Number(desde)).limit(Number(limite)),
+  ]);
 
   res.json({
     total,
@@ -45,13 +48,13 @@ const usersPut = async (req = request, res = response) => {
   });
 };
 
-const usersPatch = (req, res = response) => {
+const usersPatch = (req = request, res = response) => {
   res.json({
     msg: 'patch API',
   });
 };
 
-const usersDelete = async (req, res = response) => {
+const usersDelete = async (req = request, res = response) => {
   const { id } = req.params;
   const user = await User.findByIdAndUpdate(id, { status: false });
 
