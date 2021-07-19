@@ -10,7 +10,7 @@ class Server {
     this.authPath = '/api/auth';
     this.usersPath = '/api/users';
 
-    // conectar a base de datos
+    // conectar a base de datos en mongo
     this.conectarDB();
 
     // middlewares

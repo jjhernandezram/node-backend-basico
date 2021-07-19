@@ -16,4 +16,14 @@ router.post(
   login
 );
 
+router.post(
+  '/google',
+  [
+    check('id_token', 'El correo es obligatorio.').isEmail(),
+    check('password', 'La contraseña es obligatoria.').notEmpty(),
+    inputValidationResult,
+  ],
+  login
+);
+
 module.exports = router;

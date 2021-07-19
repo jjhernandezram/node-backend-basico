@@ -2,7 +2,9 @@ const { Router } = require('express');
 const { check } = require('express-validator');
 
 const { inputValidationResult } = require('../middlewares/validation-result');
-const { usersGet, usersPost, usersPatch, usersPut, usersDelete } = require('../controllers/users.controllers');
+const { tokenValidation } = require('../middlewares/validation-token');
+const { isAdminRole, validRoles } = require('../middlewares/validation-role');
+const { usersGet, usersPost, usersPut, usersDelete } = require('../controllers/users.controllers');
 const { roleValidation, emailValidation, existUserById } = require('../helpers/input-validation');
 
 const router = Router();
@@ -35,10 +37,15 @@ router.put(
 
 router.delete(
   '/:id',
-  [check('id', 'No es un ID valido.').isMongoId(), check('id').custom(existUserById), inputValidationResult],
+  [
+    tokenValidation,
+    // isAdminRole,
+    validRoles('ADMIN_ROLE'),
+    check('id', 'No es un ID valido.').isMongoId(),
+    check('id').custom(existUserById),
+    inputValidationResult,
+  ],
   usersDelete
 );
-
-router.patch('/', usersPatch);
 
 module.exports = router;

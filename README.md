@@ -1,4 +1,4 @@
-# RestServer con Node, Express y MongoDB
+# RestServer con Node, Express, MongoDB y JWT
 
 Recuerden ejecutar el comando `npm install` para reconstruir todos los modules de Node.
 
