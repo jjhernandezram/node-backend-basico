@@ -8,10 +8,10 @@ const dbConnection = async () => {
       useCreateIndex: true,
       useFindAndModify: false,
     });
-    console.log('Conexión a la base de datos establecida.');
+    console.log(`Conexión a la base de datos establecida.`);
   } catch (error) {
     console.log(error);
-    throw new Error('Error a la hora de establecer conexión a la base de datos.');
+    throw new Error(`Error a la hora de establecer conexión a la base de datos.`);
   }
 };
 
