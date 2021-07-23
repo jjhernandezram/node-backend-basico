@@ -3,6 +3,9 @@ const { check } = require('express-validator');
 
 const { inputValidationResult } = require('../middlewares/validation-result');
 const { tokenValidation } = require('../middlewares/validation-token');
+const { isAdminRole } = require('../middlewares/validation-role');
+
+const { categoryExist } = require('../helpers/input-validation');
 
 const {
   getAllCategories,
@@ -14,9 +17,17 @@ const {
 
 const router = Router();
 
-router.get('/', [], getAllCategories);
+router.get('/', getAllCategories);
 
-router.get('/:id', [], getCategory);
+router.get(
+  '/:id',
+  [
+    check('id', 'No existe la categoria.').custom(categoryExist),
+    check('id', 'No es un ID valido.').isMongoId(),
+    inputValidationResult,
+  ],
+  getCategory
+);
 
 router.post(
   '/new',
@@ -24,8 +35,30 @@ router.post(
   newCategory
 );
 
-router.put('/:id', [tokenValidation, inputValidationResult], updateCategory);
+router.put(
+  '/:id',
+  [
+    tokenValidation,
+    check('id', 'No existe la categoria.').custom(categoryExist),
+    check('id', 'No es un ID valido.').isMongoId(),
+    check('name', 'El nuevo nombre de la categoria es requerido.').notEmpty(),
+    inputValidationResult,
+  ],
+  updateCategory
+);
 
-router.delete('/delete/:id', [tokenValidation, inputValidationResult], deleteCategory);
+router.delete(
+  '/delete/:id',
+  [
+    [
+      tokenValidation,
+      isAdminRole,
+      check('id', 'No es un ID valido.').isMongoId(),
+      check('id', 'No existe la categoria.').custom(categoryExist),
+      inputValidationResult,
+    ],
+  ],
+  deleteCategory
+);
 
 module.exports = router;

@@ -2,12 +2,27 @@ const { request, response } = require('express');
 
 const { Category } = require('../models');
 
-const getAllCategories = (req = request, res = response) => {
-  res.json({ msg: 'enlistar todas categorias' });
+const getAllCategories = async (req = request, res = response) => {
+  const { limite = 5, desde = 0 } = req.body;
+  const query = { status: true };
+
+  const [total, categories] = await Promise.all([
+    Category.countDocuments(),
+    Category.find(query).limit(Number(limite)).skip(Number(desde)).populate('user', 'name'),
+  ]);
+
+  res.json({
+    total,
+    categories,
+  });
 };
 
-const getCategory = (req = request, res = response) => {
-  res.json({ msg: 'enlistar categoria' });
+const getCategory = async (req = request, res = response) => {
+  const { id } = req.params;
+  const category = await Category.findById(id).populate('user', 'name');
+  res.json({
+    category,
+  });
 };
 
 const newCategory = async (req = request, res = response) => {
@@ -31,12 +46,20 @@ const newCategory = async (req = request, res = response) => {
   }
 };
 
-const updateCategory = (req = request, res = response) => {
-  res.json({ msg: 'actualizar categoria' });
+const updateCategory = async (req = request, res = response) => {
+  const { id } = req.params;
+  const { status, user, ...data } = req.body;
+  data.name = data.name.toUpperCase();
+  data.user = req.user._id;
+
+  const category = await Category.findByIdAndUpdate(id, data, { new: true });
+  res.json({ category });
 };
 
-const deleteCategory = (req = request, res = response) => {
-  res.json({ msg: 'borrar categoria' });
+const deleteCategory = async (req = request, res = response) => {
+  const { id } = req.params;
+  const category = await Category.findByIdAndUpdate(id, { status: false }, { new: true });
+  res.json({ category });
 };
 
 module.exports = {

@@ -11,6 +11,7 @@ class Server {
       authPath: '/api/auth',
       usersPath: '/api/users',
       categoriesPath: '/api/categories',
+      productsPath: '/api/products',
     };
 
     // conectar a base de datos en mongo
@@ -42,6 +43,7 @@ class Server {
     this.app.use(this.paths.authPath, require('../routes/auth.routes'));
     this.app.use(this.paths.usersPath, require('../routes/users.routes'));
     this.app.use(this.paths.categoriesPath, require('../routes/categories.routes'));
+    this.app.use(this.paths.productsPath, require('../routes/products.routes'));
   }
 
   listen() {
