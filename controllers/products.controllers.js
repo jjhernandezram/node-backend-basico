@@ -1,7 +1,7 @@
 const { request, response } = require('express');
-const { body } = require('express-validator');
+const { ObjectId } = require('mongoose').Types;
+
 const { Product, Category } = require('../models');
-const product = require('../models/product');
 
 const getAllProducts = async (req = request, res = response) => {
   const { limite = 5, desde = 0 } = req.body;
@@ -59,16 +59,22 @@ const updateProduct = async (req = request, res = response) => {
       data.name = body.name.toUpperCase();
     }
 
-    const categoryExist = Category.findById(data.category);
-    // if (!categoryExist) return res.status(401).json({ msg: `La categoria con id ${data.category} no existe.` });
-    // const product = await Product.findByIdAndUpdate(id, data, { new: true });
+    if (data.category) {
+      const categoryExist = ObjectId.isValid(data.category);
+      if (!categoryExist) return res.status(400).json({ msg: 'El ID de la categoria, no es valido.' });
+    }
 
-    res.json({
-      data,
-    });
+    if (data.category) {
+      const categoryExist = await Category.findById(data.category);
+      if (!categoryExist) return res.status(400).json({ msg: 'La categoria proporcionada, no existe.' });
+    }
+
+    const product = await Product.findByIdAndUpdate(id, data, { new: true });
+
+    res.json({ product });
   } catch (error) {
     console.log(error);
-    res.status(401).json({ msg: `Error al tratar de guardar el producto.` });
+    res.status(400).json({ msg: `Error al tratar de guardar el producto.` });
   }
 };
 

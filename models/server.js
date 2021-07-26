@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 
 const { dbConnection } = require('../database/config');
 
@@ -12,6 +13,8 @@ class Server {
       usersPath: '/api/users',
       categoriesPath: '/api/categories',
       productsPath: '/api/products',
+      searchPath: '/api/search',
+      uploadPath: '/api/upload',
     };
 
     // conectar a base de datos en mongo
@@ -37,6 +40,15 @@ class Server {
 
     // directorio publico estatico
     this.app.use(express.static('public'));
+
+    // carga de archivos
+    this.app.use(
+      fileUpload({
+        useTempFiles: true,
+        tempFileDir: '/tmp/',
+        createParentPath: true,
+      })
+    );
   }
 
   routes() {
@@ -44,6 +56,8 @@ class Server {
     this.app.use(this.paths.usersPath, require('../routes/users.routes'));
     this.app.use(this.paths.categoriesPath, require('../routes/categories.routes'));
     this.app.use(this.paths.productsPath, require('../routes/products.routes'));
+    this.app.use(this.paths.searchPath, require('../routes/search.routes'));
+    this.app.use(this.paths.uploadPath, require('../routes/upload.routes'));
   }
 
   listen() {
